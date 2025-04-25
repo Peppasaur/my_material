@@ -1,0 +1,26 @@
+type: "path_tracing_multipoint_emitter"
+brdf_sampling: True # not actually used
+emitter_sampling: False # not actually used
+indir_depth: 0
+
+camera:
+  distance: 2.0
+  number_of_views: 32
+  look_at: [0.0, 0.0, 0.0]
+  up: [0.0, 1.0, 0.0]
+  position: [0.0, 0.0, -2.0]
+  camera_angle_x: 0.5
+  spiral_path: False
+
+emitter:
+  type: "dynamicpoint"
+  dist: 4.0
+  num_lights: 4
+
+spp:
+  train: 1
+  val: 1
+  test: 1
+SPP_chunk: 4
+
+resolution: [1024, 1024]

@@ -1,0 +1,13 @@
+defaults:
+  - base
+
+dataset_name: "sphere"
+dataset_path: None
+shape:
+  type: "sphere"
+  center: [0.0, 0.0, 0.0]
+  radius: 0.2
+
+pixel: True
+ray_diff: True
+custom_c2w: True

@@ -1,0 +1,12 @@
+defaults:
+  - data: sphere
+  - renderer: dynamicpoint_emitter
+  - model: direct
+  - material: mlp_pbr
+
+experiment_name: test
+output_folder: ./Over-fit_experiments
+exp_output_root_path: ${output_folder}/${data.dataset_name}/${experiment_name}
+gt_folder: 
+
+global_train_seed: 42

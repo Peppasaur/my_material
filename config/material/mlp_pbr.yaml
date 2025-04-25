@@ -1,0 +1,7 @@
+type: "MLPPBRBRDF"
+hidden_layers: []
+
+activation: 
+input_channels: 
+output_channels: 
+

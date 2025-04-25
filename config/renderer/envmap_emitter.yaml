@@ -1,0 +1,26 @@
+type: "path_tracing_envmap_emitter"
+brdf_sampling: True
+emitter_sampling: True
+indir_depth: 0
+
+camera:
+  distance: 2.0
+  number_of_views: 8
+  look_at: [0.0, 0.0, 0.0]
+  up: [0.0, 1.0, 0.0]
+  position: [0.0, 0.0, -2.0]
+  camera_angle_x: 0.5
+  spiral_path: True
+
+emitter:
+  type: "envmap"
+  num_lights: 1
+  envmap_path: "./envmap.exr"
+
+spp:
+  train: 1024
+  val: 1024
+  test: 1024
+SPP_chunk: 16
+
+resolution: [1024, 1024]

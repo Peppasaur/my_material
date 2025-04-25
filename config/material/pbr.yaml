@@ -1,0 +1,5 @@
+type: "PBRBRDF"
+
+roughness: 0.2
+metallic: 0.2
+albedo: [1.0, 1.0, 1.0]

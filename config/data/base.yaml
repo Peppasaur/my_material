@@ -1,0 +1,3 @@
+num_workers: 8
+batch_num: 256 # TODO: tune this
+batch_size: 128  # TODO: tune this
