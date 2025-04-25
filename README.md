@@ -82,27 +82,27 @@ This is the PBR model based on microfacet theory. The formula is:
 f(\mathbf{x}, \omega_i, \omega_o) = \frac{\mathbf{k}_d(\mathbf{x})}{\pi} \left( \mathbf{n} \cdot \omega_i \right)_+ + \frac{F(\omega_i, \mathbf{h}, \mathbf{k}_s(\mathbf{x})) \, D(\mathbf{h}, \mathbf{n}, \sigma(\mathbf{x})) \, G(\omega_i, \omega_o, \mathbf{n}, \sigma(\mathbf{x}))}{4 (\mathbf{n} \cdot \omega_o)}
 ```
 
-Where:
+**Where:**
 
-- \( \omega_i \): incoming light direction  
-- \( \omega_o \): view direction  
-- \( \mathbf{n} \): surface normal  
-- \( \mathbf{h} = \frac{\omega_i + \omega_o}{\|\omega_i + \omega_o\|} \): half vector  
-- \( \sigma(\mathbf{x}) \): roughness  
-- \( \mathbf{k}_d(\mathbf{x}) \): diffuse albedo  
-- \( \mathbf{k}_s(\mathbf{x}) \): specular color
+- `ω_i`: incoming light direction  
+- `ω_o`: view direction  
+- `n`: surface normal  
+- `h = (ω_i + ω_o) / ||ω_i + ω_o||`: half vector  
+- `σ(x)`: roughness  
+- `k_d(x)`: diffuse albedo  
+- `k_s(x)`: specular color
 
-Use the utility functions in `utils.ops`:
+**Use the utility functions in** `utils.ops`:
 - `D_GGX(...)`  
 - `G_Smith(...)`  
 - `fresnelSchlick(...)`
 
-#### Material Parameter Note:
+#### Material Parameter Note
 
 From the material properties (`a` for albedo, `m` for metallic), compute:
 
-- \( \mathbf{k}_d = \mathbf{a}(1 - m) \)  
-- \( \mathbf{k}_s = 0.04(1 - m) + \mathbf{a} \cdot m \)
+- `k_d = a * (1 - m)`  
+- `k_s = 0.04 * (1 - m) + a * m`
 
 ---
 
