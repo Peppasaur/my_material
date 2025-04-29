@@ -1,0 +1,78 @@
+2025-04-29 10:51:42,242 INFO    MainThread:68384 [wandb_setup.py:_flush():68] Current SDK version is 0.19.10
+2025-04-29 10:51:42,242 INFO    MainThread:68384 [wandb_setup.py:_flush():68] Configure stats pid to 68384
+2025-04-29 10:51:42,242 INFO    MainThread:68384 [wandb_setup.py:_flush():68] Loading settings from /home/featurize/.config/wandb/settings
+2025-04-29 10:51:42,242 INFO    MainThread:68384 [wandb_setup.py:_flush():68] Loading settings from /home/featurize/work/material/origin/material-capture-test/wandb/settings
+2025-04-29 10:51:42,243 INFO    MainThread:68384 [wandb_setup.py:_flush():68] Loading settings from environment variables
+2025-04-29 10:51:42,243 INFO    MainThread:68384 [wandb_init.py:setup_run_log_directory():724] Logging user logs to output/sphere/test/wandb/offline-run-20250429_105142-uvs6i0bc/logs/debug.log
+2025-04-29 10:51:42,243 INFO    MainThread:68384 [wandb_init.py:setup_run_log_directory():725] Logging internal logs to output/sphere/test/wandb/offline-run-20250429_105142-uvs6i0bc/logs/debug-internal.log
+2025-04-29 10:51:42,243 INFO    MainThread:68384 [wandb_init.py:init():852] calling init triggers
+2025-04-29 10:51:42,243 INFO    MainThread:68384 [wandb_init.py:init():857] wandb.init called with sweep_config: {}
+config: {'_wandb': {}}
+2025-04-29 10:51:42,244 INFO    MainThread:68384 [wandb_init.py:init():893] starting backend
+2025-04-29 10:51:42,244 INFO    MainThread:68384 [wandb_init.py:init():897] sending inform_init request
+2025-04-29 10:51:42,272 INFO    MainThread:68384 [backend.py:_multiprocessing_setup():101] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2025-04-29 10:51:42,273 INFO    MainThread:68384 [wandb_init.py:init():907] backend started and connected
+2025-04-29 10:51:42,295 INFO    MainThread:68384 [wandb_init.py:init():1002] updated telemetry
+2025-04-29 10:51:42,336 INFO    MainThread:68384 [wandb_init.py:init():1026] communicating run to backend with 90.0 second timeout
+2025-04-29 10:51:42,477 INFO    MainThread:68384 [wandb_init.py:init():1101] starting run threads in backend
+2025-04-29 10:51:43,329 INFO    MainThread:68384 [wandb_run.py:_console_start():2566] atexit reg
+2025-04-29 10:51:43,329 INFO    MainThread:68384 [wandb_run.py:_redirect():2414] redirect: wrap_raw
+2025-04-29 10:51:43,330 INFO    MainThread:68384 [wandb_run.py:_redirect():2483] Wrapping output streams.
+2025-04-29 10:51:43,330 INFO    MainThread:68384 [wandb_run.py:_redirect():2506] Redirects installed.
+2025-04-29 10:51:43,335 INFO    MainThread:68384 [wandb_init.py:init():1147] run started, returning control to user process
+2025-04-29 10:51:43,853 INFO    MainThread:68384 [wandb_run.py:_config_callback():1429] config_cb None None {'data/num_workers': 8, 'data/batch_num': 256, 'data/batch_size': 128, 'data/dataset_name': 'sphere', 'data/dataset_path': 'None', 'data/shape/type': 'sphere', 'data/shape/center': [0.0, 0.0, 0.0], 'data/shape/radius': 0.2, 'data/pixel': True, 'data/ray_diff': True, 'data/custom_c2w': True, 'renderer/type': 'path_tracing_multipoint_emitter', 'renderer/brdf_sampling': True, 'renderer/emitter_sampling': False, 'renderer/indir_depth': 0, 'renderer/camera/distance': 2.0, 'renderer/camera/number_of_views': 32, 'renderer/camera/look_at': [0.0, 0.0, 0.0], 'renderer/camera/up': [0.0, 1.0, 0.0], 'renderer/camera/position': [0.0, 0.0, -2.0], 'renderer/camera/camera_angle_x': 0.5, 'renderer/camera/spiral_path': False, 'renderer/emitter/type': 'dynamicpoint', 'renderer/emitter/dist': 4.0, 'renderer/emitter/num_lights': 4, 'renderer/spp/train': 1, 'renderer/spp/val': 1, 'renderer/spp/test': 1, 'renderer/SPP_chunk': 4, 'renderer/resolution': [1024, 1024], 'model/ckpt_path': '/home/featurize/work/material/material-capture-test/output/sphere/test/training/model_0.20_0.20/last.ckpt', 'model/resume_training': True, 'model/logger/_target_': 'pytorch_lightning.loggers.WandbLogger', 'model/logger/project': 'brdf-capture', 'model/logger/name': 'test', 'model/trainer/accelerator': 'gpu', 'model/trainer/devices': 1, 'model/trainer/num_nodes': 1, 'model/trainer/max_epochs': 120, 'model/trainer/max_steps': 200000, 'model/trainer/check_val_every_n_epoch': 1, 'model/checkpoint_monitor/_target_': 'pytorch_lightning.callbacks.ModelCheckpoint', 'model/checkpoint_monitor/save_top_k': 2, 'model/checkpoint_monitor/every_n_epochs': 1, 'model/checkpoint_monitor/filename': '{epoch}', 'model/checkpoint_monitor/dirpath': 'output/sphere/test/training', 'model/optimizer/name': 'Adam', 'model/optimizer/weight_decay': 0.0, 'model/optimizer/lr': 0.001, 'model/optimizer/final_lr': 0.0001, 'model/optimizer/warmup_steps_ratio': 0.0, 'model/lr_decay/decay_start_epoch': 6, 'material/type': 'MLPPBRBRDF', 'material/hidden_layers': [], 'material/activation': None, 'material/input_channels': None, 'material/output_channels': None, 'experiment_name': 'test', 'output_folder': 'output', 'exp_output_root_path': 'output/sphere/test', 'gt_folder': None, 'global_train_seed': 42}
+2025-04-29 10:51:46,487 INFO    MsgRouterThr:68384 [mailbox.py:close():129] [no run ID] Closing mailbox, abandoning 0 handles.
+2025-04-29 10:51:46,706 ERROR   MainThread:68384 [redirect.py:_on_write():664] [no run ID] error in stdout callback
+Traceback (most recent call last):
+  File "/home/featurize/work/material_env/lib/python3.10/site-packages/wandb/sdk/lib/redirect.py", line 662, in _on_write
+    cb(written_data)
+  File "/home/featurize/work/material_env/lib/python3.10/site-packages/wandb/sdk/wandb_run.py", line 2487, in <lambda>
+    lambda data: self._console_raw_callback("stdout", data),
+  File "/home/featurize/work/material_env/lib/python3.10/site-packages/wandb/sdk/wandb_run.py", line 406, in wrapper
+    return func(self, *args, **kwargs)
+  File "/home/featurize/work/material_env/lib/python3.10/site-packages/wandb/sdk/wandb_run.py", line 464, in wrapper_fn
+    return func(self, *args, **kwargs)
+  File "/home/featurize/work/material_env/lib/python3.10/site-packages/wandb/sdk/wandb_run.py", line 1632, in _console_raw_callback
+    self._backend.interface.publish_output_raw(name, data)
+  File "/home/featurize/work/material_env/lib/python3.10/site-packages/wandb/sdk/interface/interface.py", line 763, in publish_output_raw
+    self._publish_output_raw(o)
+  File "/home/featurize/work/material_env/lib/python3.10/site-packages/wandb/sdk/interface/interface_shared.py", line 38, in _publish_output_raw
+    self._publish(rec)
+  File "/home/featurize/work/material_env/lib/python3.10/site-packages/wandb/sdk/interface/interface_sock.py", line 39, in _publish
+    self._sock_client.send_record_publish(record)
+  File "/home/featurize/work/material_env/lib/python3.10/site-packages/wandb/sdk/lib/sock_client.py", line 174, in send_record_publish
+    self.send_server_request(server_req)
+  File "/home/featurize/work/material_env/lib/python3.10/site-packages/wandb/sdk/lib/sock_client.py", line 154, in send_server_request
+    self._send_message(msg)
+  File "/home/featurize/work/material_env/lib/python3.10/site-packages/wandb/sdk/lib/sock_client.py", line 151, in _send_message
+    self._sendall_with_error_handle(header + data)
+  File "/home/featurize/work/material_env/lib/python3.10/site-packages/wandb/sdk/lib/sock_client.py", line 130, in _sendall_with_error_handle
+    sent = self._sock.send(data)
+BrokenPipeError: [Errno 32] Broken pipe
+2025-04-29 10:51:46,805 ERROR   MainThread:68384 [redirect.py:_on_write():664] [no run ID] error in stdout callback
+Traceback (most recent call last):
+  File "/home/featurize/work/material_env/lib/python3.10/site-packages/wandb/sdk/lib/redirect.py", line 662, in _on_write
+    cb(written_data)
+  File "/home/featurize/work/material_env/lib/python3.10/site-packages/wandb/sdk/wandb_run.py", line 2487, in <lambda>
+    lambda data: self._console_raw_callback("stdout", data),
+  File "/home/featurize/work/material_env/lib/python3.10/site-packages/wandb/sdk/wandb_run.py", line 406, in wrapper
+    return func(self, *args, **kwargs)
+  File "/home/featurize/work/material_env/lib/python3.10/site-packages/wandb/sdk/wandb_run.py", line 464, in wrapper_fn
+    return func(self, *args, **kwargs)
+  File "/home/featurize/work/material_env/lib/python3.10/site-packages/wandb/sdk/wandb_run.py", line 1632, in _console_raw_callback
+    self._backend.interface.publish_output_raw(name, data)
+  File "/home/featurize/work/material_env/lib/python3.10/site-packages/wandb/sdk/interface/interface.py", line 763, in publish_output_raw
+    self._publish_output_raw(o)
+  File "/home/featurize/work/material_env/lib/python3.10/site-packages/wandb/sdk/interface/interface_shared.py", line 38, in _publish_output_raw
+    self._publish(rec)
+  File "/home/featurize/work/material_env/lib/python3.10/site-packages/wandb/sdk/interface/interface_sock.py", line 39, in _publish
+    self._sock_client.send_record_publish(record)
+  File "/home/featurize/work/material_env/lib/python3.10/site-packages/wandb/sdk/lib/sock_client.py", line 174, in send_record_publish
+    self.send_server_request(server_req)
+  File "/home/featurize/work/material_env/lib/python3.10/site-packages/wandb/sdk/lib/sock_client.py", line 154, in send_server_request
+    self._send_message(msg)
+  File "/home/featurize/work/material_env/lib/python3.10/site-packages/wandb/sdk/lib/sock_client.py", line 151, in _send_message
+    self._sendall_with_error_handle(header + data)
+  File "/home/featurize/work/material_env/lib/python3.10/site-packages/wandb/sdk/lib/sock_client.py", line 130, in _sendall_with_error_handle
+    sent = self._sock.send(data)
+BrokenPipeError: [Errno 32] Broken pipe

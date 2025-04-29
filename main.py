@@ -86,6 +86,21 @@ def main(cfg):
     lr_monitor = LearningRateMonitor(logging_interval='step')
 
     print("==> initializing trainer ...")
+    
+    ckpt_path = None
+    if hasattr(cfg.model, 'resume_training') and cfg.model.resume_training:
+        if hasattr(cfg.model, 'ckpt_path') and os.path.exists(cfg.model.ckpt_path):
+            ckpt_path = cfg.model.ckpt_path
+            print(f"==> 从检查点恢复训练: {ckpt_path}")
+        else:
+            # 尝试查找最新的last.ckpt
+            model_dir = os.path.join(cfg.model.checkpoint_monitor.dirpath, f'model_{roughness:.2f}_{metallic:.2f}')
+            last_ckpt = os.path.join(model_dir, 'last.ckpt')
+            if os.path.exists(last_ckpt):
+                ckpt_path = last_ckpt
+                print(f"==> 从最新检查点恢复训练: {ckpt_path}")
+            else:
+                print("==> 未找到有效检查点，将从头开始训练")
 
     trainer = pl.Trainer(
         callbacks=[checkpoint_callback, lr_monitor], logger=logger, **cfg.model.trainer, strategy=DDPStrategy(find_unused_parameters=True)

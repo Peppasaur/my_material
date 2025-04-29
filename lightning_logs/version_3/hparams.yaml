@@ -1,0 +1,89 @@
+data:
+  num_workers: 8
+  batch_num: 256
+  batch_size: 128
+  dataset_name: sphere
+  dataset_path: None
+  shape:
+    type: sphere
+    center:
+    - 0.0
+    - 0.0
+    - 0.0
+    radius: 0.2
+  pixel: true
+  ray_diff: true
+  custom_c2w: true
+renderer:
+  type: path_tracing_envmap_emitter
+  brdf_sampling: true
+  emitter_sampling: true
+  indir_depth: 0
+  camera:
+    distance: 2.0
+    number_of_views: 1
+    look_at:
+    - 0.0
+    - 0.0
+    - 0.0
+    up:
+    - 0.0
+    - 1.0
+    - 0.0
+    position:
+    - 0.0
+    - 0.0
+    - -2.0
+    camera_angle_x: 0.5
+    spiral_path: true
+  emitter:
+    type: envmap
+    num_lights: 1
+    envmap_path: ./envmap.exr
+  spp:
+    train: 1024
+    val: 1024
+    test: 1024
+  SPP_chunk: 16
+  resolution:
+  - 1024
+  - 1024
+model:
+  ckpt_path: /home/featurize/work/material/origin/material-capture-test/output/sphere/test/training/model_0.20_0.20/last.ckpt
+  resume_training: true
+  logger:
+    _target_: pytorch_lightning.loggers.WandbLogger
+    project: brdf-capture
+    name: test
+  trainer:
+    accelerator: gpu
+    devices: 1
+    num_nodes: 1
+    max_epochs: 80
+    max_steps: 200000
+    check_val_every_n_epoch: 1
+  checkpoint_monitor:
+    _target_: pytorch_lightning.callbacks.ModelCheckpoint
+    save_top_k: 2
+    every_n_epochs: 1
+    filename: '{epoch}'
+    dirpath: output/sphere/test/training
+  optimizer:
+    name: Adam
+    weight_decay: 0.0
+    lr: 0.001
+    final_lr: 0.0001
+    warmup_steps_ratio: 0.0
+  lr_decay:
+    decay_start_epoch: 6
+material:
+  type: MLPPBRBRDF
+  hidden_layers: []
+  activation: null
+  input_channels: null
+  output_channels: null
+experiment_name: test
+output_folder: output
+exp_output_root_path: output/sphere/test
+gt_folder: null
+global_train_seed: 42

@@ -5,7 +5,7 @@ defaults:
   - material: mlp_pbr
 
 experiment_name: test
-output_folder: ./Over-fit_experiments
+output_folder: output
 exp_output_root_path: ${output_folder}/${data.dataset_name}/${experiment_name}
 gt_folder: 
 

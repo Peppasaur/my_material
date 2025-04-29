@@ -164,7 +164,11 @@ def path_tracing_envmap_emitter(scene,emitter_net,material_net,rays_o,rays_d,dx_
         w_mis[brdf_pdf.isinf()|(emit_pdf==0)] = 1
         w_mis[w_mis.isnan()] = 0
         L[active_next] += brdf_weight*Le * w_mis
-
+    
+    #print("L",torch.mean(L))
+    has_invalid = torch.isnan(L).any() or torch.isinf(L).any()
+    if has_invalid:
+        print("Contains NaN or inf:", has_invalid)
     L = L.reshape(B,spp,3).mean(1)
     return L
 

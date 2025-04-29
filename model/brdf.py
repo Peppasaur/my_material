@@ -78,22 +78,89 @@ class PBRBRDF(nn.Module):
         return wi
     
 
-    def eval_brdf(self,wi,wo,normal):
+    def eval_brdf(self, wi, wo, normal):
         """
         Args:
             wi: Bx3 light direction
             wo: Bx3 viewing direction
             normal: Bx3 normal
-            mat: surface BRDF dict
         Return:
             brdf: Bx3
             pdf: Bx1
         """
-        # TODO: implement a proper PBR BRDF, using utils.ops functions like D_GGX, G_Smith, fresnelSchlick, etc. 
+        # 检查几何有效性（光线和视线都在法线正半球）
+        NoL = (wi*normal).sum(-1, keepdim=True)
+        NoV = (wo*normal).sum(-1, keepdim=True)
+        no_valid_geometry = (NoL < 0) | (NoV < 0)  # 按元素判断是否有效
 
-        brdf = torch.zeros_like(wi)
-        pdf = torch.zeros_like(wi)
-        return brdf,pdf
+        # 如果没有有效的几何配置，提前返回零值
+        
+        if no_valid_geometry.any():
+            print("no_valid_geometry")
+            return torch.zeros_like(wi), torch.zeros(wi.shape[0], 1, device=wi.device)
+        
+        # 计算半矢量
+        h = NF.normalize(wi+wo, dim=-1)
+        NoL = NoL.relu()  # 在检查后可以安全地使用relu
+        NoV = NoV.relu()
+        VoH = (wo*h).sum(-1, keepdim=True).relu()
+        NoH = (normal*h).sum(-1, keepdim=True).relu()
+
+        '''
+        NoL = NoL.clamp(1e-6, 1.0)
+        NoV = NoV.clamp(1e-6, 1.0)
+        VoH = VoH.clamp(1e-6, 1.0)
+        NoH = NoH.clamp(1e-6, 1.0)
+        '''
+        '''
+        print("NoL",torch.mean(NoL))
+        print("NoV",torch.mean(NoV))
+        print("VoH",torch.mean(VoH))
+        print("NoH",torch.mean(NoH))
+        '''
+        # 计算漫反射系数和镜面反射系数
+        # k_d = a * (1 - m)
+        k_d = self.albedo * (1 - self.metallic)
+        
+        # k_s = 0.04 * (1 - m) + a * m
+        k_s = 0.04 * (1 - self.metallic) + self.albedo * self.metallic
+        
+        # 计算漫反射项 (k_d/π) * (n·ω_i)
+        diffuse = k_d * NoL / math.pi
+        
+        # 计算PBR BRDF的组成部分
+        D = D_GGX(NoH, self.roughness)
+        G = G_Smith(NoV, NoL, self.roughness)
+        F = fresnelSchlick(VoH, k_s)
+        
+        
+        # 计算镜面反射项 F(ω_i, h, k_s) * D(h, η, σ) * G(ω_i, ω_o, η, σ) / (4 * (n·ω_o))
+        specular = F * D * G / (4 * NoV + 1e-4)
+        #print("F D G", torch.mean(F), torch.mean(D), torch.mean(G))
+        # 完整的BRDF：f(x, ω_i, ω_o) = (k_d/π) * (n·ω_i) + F(...) * D(...) * G(...) / (4 * (n·ω_o))
+        brdf = diffuse + specular
+        '''
+        if (brdf > 1).any():
+            print("D",torch.mean(D))
+            print("G",torch.mean(G))
+            print("F",torch.mean(F))
+            print("diffuse",torch.mean(diffuse))
+            print("specular",torch.mean(specular))
+        '''
+        '''
+        if torch.any(diffuse < 0):
+            print("警告：张量diffuse中存在小于0的元素！")
+        if torch.any(specular < 0):
+            print("警告：张量specular中存在小于0的元素！")
+        '''
+        # 计算PDF（重要性采样的PDF）
+        pdf_spec = D/((4*VoH.clamp_min(1e-4))*NoH.clamp_min(1e-4))
+        pdf_diff = NoL / math.pi
+        pdf = 0.5 * pdf_spec + 0.5 * pdf_diff
+        #print("albedo roughness metallic", self.albedo, self.roughness, self.metallic)
+        #print("pbrbrdf",torch.mean(brdf))
+        #brdf=brdf.clamp(0,1)
+        return brdf, pdf
     
     def sample_brdf(self,sample1,sample2,wo,normal):
         """ importance sampling brdf and get brdf/pdf
@@ -251,6 +318,40 @@ class MLPPBRBRDF(nn.Module):
 
         self.proxy_brdf = ProxyPBRBRDF(roughness=gt_roughness)
         self.Linear = nn.Linear(9, 1)
+        
+        self.encoding_wi = encoding.SHEncoding(levels=4)  # 使用4阶球谐函数
+        self.encoding_wo = encoding.SHEncoding(levels=4)
+        
+        # 计算编码后的输入维度
+        wi_enc_dim = self.encoding_wi.get_out_dim()
+        wo_enc_dim = self.encoding_wo.get_out_dim()
+        
+        class ExpActivation(nn.Module):
+            def forward(self, x):
+                return torch.exp(x)
+        input_dim = wi_enc_dim + wo_enc_dim 
+        self.mlp = nn.Sequential(
+            nn.Linear(input_dim, 64),
+            nn.ReLU(),
+            nn.Linear(64, 64),
+            nn.ReLU(),
+            nn.Linear(64, 64),
+            nn.ReLU(),
+            nn.Linear(64, 64),
+            nn.ReLU(),
+            nn.Linear(64, 64),
+            nn.ReLU(),
+            nn.Linear(64, 64),
+            nn.ReLU(),
+            nn.Linear(64, 64),
+            nn.ReLU(),
+            nn.Linear(64, 64),
+            nn.ReLU(),
+            nn.Linear(64, 3),
+            ExpActivation()
+            #nn.ReLU()
+            #nn.Sigmoid()  # 输出层仍使用Sigmoid保证值在[0,1]范围
+        )
 
 
     def forward(self, wi, wo, normal):
@@ -262,17 +363,45 @@ class MLPPBRBRDF(nn.Module):
         Returns:
             brdf: Bx1 BRDF values
         """
-        # TODO: replace the Linear layer with a proper MLP model with SH position encoding
+        # 将世界坐标转换为局部坐标
         wi_local, wo_local, normal_local = self.world_to_local(wi, wo, normal)
-        x =  torch.cat([wi_local, wo_local, normal_local], dim=-1)
-        return self.Linear(x)
+        
+        #test
+        #wi_local=wi
+        #wo_local=wo
+        #normal_local=normal
+        #test_end
+        # 对局部坐标中的方向向量进行编码
+        wi_encoded = self.encoding_wi(wi_local)
+        wo_encoded = self.encoding_wo(wo_local)
+        
+        # 拼接编码后的向量和法线
+        x = torch.cat([wi_encoded, wo_encoded], dim=-1)
+        
+        # 通过MLP预测BRDF值
+        return self.mlp(x)
 
     def world_to_local(self, wi, wo, normal):
-        # TODO: implement a proper world_to_local transformation
-        wi_local = wi
-        wo_local = wo
-        normal_local = normal
-
+        """
+        将世界坐标系中的向量转换到以normal为z轴的局部坐标系
+        Args:
+            wi: Bx3 light direction in world space
+            wo: Bx3 viewing direction in world space
+            normal: Bx3 normal in world space
+        Returns:
+            wi_local, wo_local, normal_local: 局部坐标系中的向量
+        """
+        # 获取从世界坐标到法线坐标空间的变换矩阵
+        Nmat = get_normal_space(normal)  # Bx3x3
+        
+        # 将向量从世界坐标转换到局部坐标
+        wi_local = torch.bmm(wi.unsqueeze(1), Nmat).squeeze(1)    # Bx1x3 @ Bx3x3 -> Bx1x3 -> Bx3
+        wo_local = torch.bmm(wo.unsqueeze(1), Nmat).squeeze(1)
+        
+        # 在局部坐标系中，法线应该是(0,0,1)
+        # 但为了保持一致性，我们使用实际计算得到的值
+        normal_local = torch.bmm(normal.unsqueeze(1), Nmat).squeeze(1)
+        
         return wi_local, wo_local, normal_local
     
     def eval_brdf(self, wi, wo, normal):

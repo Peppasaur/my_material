@@ -10,12 +10,29 @@ from torchvision import transforms as T
 import cv2
 import math
 import matplotlib.pyplot as plt
+from ..ops import angle2xyz
+
 
 def get_ray_directions(H, W, focal):
     """ get camera ray direction """
-    # TODO: implement a proper camera ray direction
-    directions = torch.zeros(H, W, 3)
-
+    # 创建像素坐标网格
+    i, j = torch.meshgrid(torch.linspace(0, W-1, W), 
+                         torch.linspace(0, H-1, H))
+    i = i.t()
+    j = j.t()
+    
+    # 将像素坐标转换为相机空间坐标
+    # 相机空间的原点在图像中心，x轴向右，y轴向下，z轴向前
+    directions = torch.stack([
+        (i - W/2) / focal,  # x坐标
+        -(j - H/2) / focal, # y坐标 (注意y轴方向)
+        torch.ones_like(i) # z坐标 (负号表示光线向前)
+    ], -1)
+    
+    print("focal", focal)
+    # 对光线方向进行归一化，确保是单位向量
+    directions = torch.nn.functional.normalize(directions, dim=-1)
+    
     return directions
 
 def get_rays(directions, c2w, focal=None):
@@ -62,8 +79,27 @@ def get_c2w(camera):
     target = torch.tensor(camera['look_at'], dtype=torch.float32)
     up = torch.tensor(camera.get('up', [0,1,0]), dtype=torch.float32)
     
-    # TODO: implement a proper camera to world matrix
+    # 计算相机的前向向量（从位置指向目标）
+    forward = NF.normalize(target - position, dim=-1)
+    
+    # 计算相机的右向量（上向量和前向向量的叉积）
+    right = NF.normalize(torch.cross(up, forward), dim=-1)
+    
+    # 重新计算上向量（前向向量和右向量的叉积）
+    up = torch.cross(forward, right)
+    
+    # 构建相机到世界的变换矩阵
+    # 旋转部分：将相机坐标系（右、上、前）映射到世界坐标系
+    R = torch.stack([right, up, forward], dim=-1)
+    
+    # 平移部分：相机位置
+    t = position
+    
+    # 组合成4x4变换矩阵
     c2w = torch.eye(4)
+    c2w[:3, :3] = R
+    c2w[:3, 3] = t
+    
     return c2w[:3,:4]
 
 class SphereDataset(Dataset):
@@ -136,15 +172,48 @@ class SphereDataset(Dataset):
                 self.all_rgbs = None
             self.batch_num = cfg.data.batch_num
 
+    def fibonacci_sphere_sampling(self,n_samples, radius=1.0):
+        """ Generate points uniformly distributed on a sphere using Fibonacci sphere sampling
+        Args:
+            n_samples: number of points to sample
+            radius: radius of the sphere
+        Returns:
+            points: n_samples x 3 tensor of points on the sphere
+        """
+        golden_ratio = (1 + 5 ** 0.5) / 2
+
+        # Generate indices
+        indices = torch.arange(n_samples, dtype=torch.float32)
+
+        # Calculate y coordinates (from 1 to -1)
+        y = 1 - (indices / (n_samples - 1)) * 2
+
+        # Calculate phi and theta
+        phi = torch.acos(y)
+        theta = 2 * math.pi * indices / golden_ratio
+
+        # Convert to cartesian coordinates
+        points = angle2xyz(phi, theta) * radius
+
+        return points
 
     def get_camera_dicts(self):
         # Initialize camera dicts list
         self.camera_dict = []
         self.total = self.number_of_views
         self.radius = self.distance
-        # TODO: implement a list of camera dicts by uniformly sampling the sphere
-        for i in range(self.number_of_views):
-            self.camera_dict.append(self.initial_camera_dict)
+        
+        # 使用斐波那契球面采样获取相机位置
+        positions = self.fibonacci_sphere_sampling(self.number_of_views, self.radius)
+        
+        # 为每个位置创建相机字典
+        for position in positions:
+            camera_dict = {
+                "position": position.tolist(),
+                "look_at": self.initial_camera_dict["look_at"],
+                "up": self.initial_camera_dict["up"]
+            }
+            self.camera_dict.append(camera_dict)
 
 
     def get_camera_rotation_dicts(self):

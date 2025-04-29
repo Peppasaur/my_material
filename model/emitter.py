@@ -51,6 +51,31 @@ class EnvMapEmitter(nn.Module):
         idx = torch.full((position.shape[0],), -1, dtype=torch.long, device=position.device)
         
         return wi, pdf, idx
+    
+    def direction_to_uv(self, light_dir):
+        """
+        将光线方向向量转换为环境光贴图上的UV坐标
+        Args:
+            light_dir: Bx3 光线方向
+        Returns:
+            u: B UV坐标的u分量，范围[0,1]
+            v: B UV坐标的v分量，范围[0,1]
+        """
+        
+        # 对光线方向进行归一化，确保是单位向量
+        light_dir = NF.normalize(light_dir, dim=-1)
+        
+        # 计算球面坐标 (theta, phi)
+        # theta是y轴的极角，phi是xz平面的方位角
+        theta = torch.acos(light_dir[..., 1].clamp(-1.0 + 1e-6, 1.0 - 1e-6))  # 从y轴测量的角度
+        phi = torch.atan2(light_dir[..., 0], light_dir[..., 2])  # xz平面上的角度
+        
+        # 映射到UV坐标 [0,1]x[0,1]
+        # 对于标准经纬度环境贴图：
+        u = (phi / (2 * math.pi) + 0.5) % 1.0  # 将[-pi, pi]映射到[0, 1]
+        v = theta / math.pi  # 将[0, pi]映射到[0, 1]
+        #print("u v", u, v)
+        return u, v
 
     def eval_emitter(self, position, light_dir):
         """
@@ -63,10 +88,44 @@ class EnvMapEmitter(nn.Module):
             pdf: Bx1 pdf
             valid: B valid samples (always True for envmap)
         """
-        # TODO: return the radiance of the environment map from the light_dir
-        Le = torch.zeros_like(light_dir)
-        pdf = torch.ones_like(light_dir)[:,0]
-        return Le, pdf, torch.ones_like(pdf, dtype=torch.bool)  # Always valid
+        # 将光线方向转换为UV坐标
+        u, v = self.direction_to_uv(light_dir)
+        
+        # 计算环境贴图上的像素坐标
+        x = (u * self.W).clamp(0, self.W - 1)
+        y = (v * self.H).clamp(0, self.H - 1)
+        #print("x y", x, y)
+        #
+        # 将坐标转换为整数以查询环境贴图
+        x0, y0 = x.floor().long(), y.floor().long()
+        x1, y1 = (x0 + 1).clamp(0, self.W - 1), (y0 + 1).clamp(0, self.H - 1)
+        
+        # 计算双线性插值权重
+        wx = x - x0.float()
+        wy = y - y0.float()
+        
+        # 从环境贴图中采样并执行双线性插值
+        C00 = self.envmap[:, y0, x0].permute(1, 0)  # Bx3
+        C01 = self.envmap[:, y0, x1].permute(1, 0)  # Bx3
+        C10 = self.envmap[:, y1, x0].permute(1, 0)  # Bx3
+        C11 = self.envmap[:, y1, x1].permute(1, 0)  # Bx3
+        
+        # 双线性插值
+        wx = wx.unsqueeze(-1)
+        wy = wy.unsqueeze(-1)
+        C0 = C00 * (1 - wx) + C01 * wx
+        C1 = C10 * (1 - wx) + C11 * wx
+        Le = C0 * (1 - wy) + C1 * wy
+        Le/=256
+        #print("env_map", self.envmap.shape)
+        #print("Le", Le)
+        # 计算pdf (这里使用简单的均匀pdf)
+        pdf = torch.full((light_dir.shape[0], 1), 1.0 / (4 * math.pi), device=light_dir.device)
+        
+        # 所有样本都有效
+        valid = torch.ones_like(pdf, dtype=torch.bool)
+        
+        return Le, pdf, valid
     
 class DynamicPointEmitter(nn.Module):
     def __init__(self, dist=4.0, num_lights=8):

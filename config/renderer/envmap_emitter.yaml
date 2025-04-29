@@ -5,7 +5,7 @@ indir_depth: 0
 
 camera:
   distance: 2.0
-  number_of_views: 8
+  number_of_views: 1
   look_at: [0.0, 0.0, 0.0]
   up: [0.0, 1.0, 0.0]
   position: [0.0, 0.0, -2.0]

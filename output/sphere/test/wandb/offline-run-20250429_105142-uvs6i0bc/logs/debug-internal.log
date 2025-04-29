@@ -1,0 +1,15 @@
+{"time":"2025-04-29T10:51:42.363198875+08:00","level":"INFO","msg":"stream: starting","core version":"0.19.10","symlink path":"output/sphere/test/wandb/offline-run-20250429_105142-uvs6i0bc/logs/debug-core.log"}
+{"time":"2025-04-29T10:51:42.471900744+08:00","level":"WARN","msg":"GraphQL client is nil, skipping feature loading"}
+{"time":"2025-04-29T10:51:42.474394053+08:00","level":"INFO","msg":"created new stream","id":"uvs6i0bc"}
+{"time":"2025-04-29T10:51:42.47450087+08:00","level":"INFO","msg":"stream: started","id":"uvs6i0bc"}
+{"time":"2025-04-29T10:51:42.474544749+08:00","level":"INFO","msg":"writer: Do: started","stream_id":"uvs6i0bc"}
+{"time":"2025-04-29T10:51:42.474622143+08:00","level":"INFO","msg":"sender: started","stream_id":"uvs6i0bc"}
+{"time":"2025-04-29T10:51:42.474658397+08:00","level":"INFO","msg":"handler: started","stream_id":"uvs6i0bc"}
+{"time":"2025-04-29T10:51:42.482405513+08:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-04-29T10:51:46.488685104+08:00","level":"INFO","msg":"stream: closing","id":"uvs6i0bc"}
+{"time":"2025-04-29T10:51:46.488828587+08:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-04-29T10:51:46.489245119+08:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-04-29T10:51:46.489380966+08:00","level":"INFO","msg":"handler: closed","stream_id":"uvs6i0bc"}
+{"time":"2025-04-29T10:51:46.48939261+08:00","level":"INFO","msg":"writer: Close: closed","stream_id":"uvs6i0bc"}
+{"time":"2025-04-29T10:51:46.489403305+08:00","level":"INFO","msg":"sender: closed","stream_id":"uvs6i0bc"}
+{"time":"2025-04-29T10:51:46.490274836+08:00","level":"INFO","msg":"stream: closed","id":"uvs6i0bc"}

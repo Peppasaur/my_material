@@ -1,4 +1,6 @@
-ckpt_path: 
+ckpt_path: /home/featurize/work/material/origin/material-capture-test/output/sphere/test/training/model_0.20_0.20/last.ckpt
+# 是否从检查点恢复训练
+resume_training: true
 
 logger:
   # https://pytorch-lightning.readthedocs.io/en/stable/extensions/generated/pytorch_lightning.loggers.WandbLogger.html
@@ -8,11 +10,11 @@ logger:
 
 trainer:
   accelerator: gpu #cpu or gpu
-  devices: auto
+  devices: 1
   num_nodes: 1
-  max_epochs: 2 # TODO: tune this
-  max_steps: 200 # TODO: tune this
-  check_val_every_n_epoch: 5
+  max_epochs: 80 # TODO: tune this
+  max_steps: 200000 # TODO: tune this
+  check_val_every_n_epoch: 1
 
 # https://pytorch-lightning.readthedocs.io/en/stable/api/pytorch_lightning.callbacks.ModelCheckpoint.html
 checkpoint_monitor:
@@ -26,8 +28,13 @@ checkpoint_monitor:
 optimizer:
   name: Adam # SGD or Adam
   weight_decay: 0.0
-  lr: 0.1 # TODO: tune this
+  #lr: 0.003 best_version
+  lr: 0.001 #Adam
+  #lr: 0.1 #Adabound
+  final_lr: 0.0001
+  #lr: 0.3
   warmup_steps_ratio: 0.0
+  
 
 lr_decay: # for Adam
   decay_start_epoch: 6

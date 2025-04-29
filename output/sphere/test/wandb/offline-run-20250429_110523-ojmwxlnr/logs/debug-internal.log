@@ -1,0 +1,15 @@
+{"time":"2025-04-29T11:05:24.01110125+08:00","level":"INFO","msg":"stream: starting","core version":"0.19.10","symlink path":"output/sphere/test/wandb/offline-run-20250429_110523-ojmwxlnr/logs/debug-core.log"}
+{"time":"2025-04-29T11:05:24.119267898+08:00","level":"WARN","msg":"GraphQL client is nil, skipping feature loading"}
+{"time":"2025-04-29T11:05:24.120974609+08:00","level":"INFO","msg":"created new stream","id":"ojmwxlnr"}
+{"time":"2025-04-29T11:05:24.121037478+08:00","level":"INFO","msg":"stream: started","id":"ojmwxlnr"}
+{"time":"2025-04-29T11:05:24.121117262+08:00","level":"INFO","msg":"sender: started","stream_id":"ojmwxlnr"}
+{"time":"2025-04-29T11:05:24.121103773+08:00","level":"INFO","msg":"writer: Do: started","stream_id":"ojmwxlnr"}
+{"time":"2025-04-29T11:05:24.121176556+08:00","level":"INFO","msg":"handler: started","stream_id":"ojmwxlnr"}
+{"time":"2025-04-29T11:05:24.165980531+08:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-04-29T11:20:21.174819752+08:00","level":"INFO","msg":"stream: closing","id":"ojmwxlnr"}
+{"time":"2025-04-29T11:20:21.175088991+08:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-04-29T11:20:21.175570334+08:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-04-29T11:20:21.175785183+08:00","level":"INFO","msg":"handler: closed","stream_id":"ojmwxlnr"}
+{"time":"2025-04-29T11:20:21.17581053+08:00","level":"INFO","msg":"sender: closed","stream_id":"ojmwxlnr"}
+{"time":"2025-04-29T11:20:21.175808093+08:00","level":"INFO","msg":"writer: Close: closed","stream_id":"ojmwxlnr"}
+{"time":"2025-04-29T11:20:21.1768212+08:00","level":"INFO","msg":"stream: closed","id":"ojmwxlnr"}
