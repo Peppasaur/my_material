@@ -91,14 +91,15 @@ class PBRBRDF(nn.Module):
         # 检查几何有效性（光线和视线都在法线正半球）
         NoL = (wi*normal).sum(-1, keepdim=True)
         NoV = (wo*normal).sum(-1, keepdim=True)
-        no_valid_geometry = (NoL < 0) | (NoV < 0)  # 按元素判断是否有效
-
-        # 如果没有有效的几何配置，提前返回零值
+        valid_geometry = (NoL > 0) &(NoV > 0)  # 按元素判断是否有效
+        invalid_geometry = (NoL < 0) |(NoV < 0)
         
+        # 如果没有有效的几何配置，提前返回零值
+        '''
         if no_valid_geometry.any():
             print("no_valid_geometry")
             return torch.zeros_like(wi), torch.zeros(wi.shape[0], 1, device=wi.device)
-        
+        '''
         # 计算半矢量
         h = NF.normalize(wi+wo, dim=-1)
         NoL = NoL.relu()  # 在检查后可以安全地使用relu
@@ -155,11 +156,13 @@ class PBRBRDF(nn.Module):
         '''
         # 计算PDF（重要性采样的PDF）
         pdf_spec = D/((4*VoH.clamp_min(1e-4))*NoH.clamp_min(1e-4))
-        pdf_diff = NoL / math.pi
+        pdf_diff = NoV / math.pi
         pdf = 0.5 * pdf_spec + 0.5 * pdf_diff
         #print("albedo roughness metallic", self.albedo, self.roughness, self.metallic)
         #print("pbrbrdf",torch.mean(brdf))
         #brdf=brdf.clamp(0,1)
+        #print("invalid_geometry",invalid_geometry.sum())
+        return valid_geometry*brdf,valid_geometry*pdf
         return brdf, pdf
     
     def sample_brdf(self,sample1,sample2,wo,normal):
